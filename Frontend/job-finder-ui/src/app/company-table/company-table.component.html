@@ -1,0 +1,15 @@
+<table>
+  <thead>
+    <tr>
+      <th>Company Name</th>
+      <th>Number of Posts</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let company of companyData">
+      <td>{{ company.companyName }}</td>
+      <td>{{ company.numberOfPosts }}</td>
+    </tr>
+  </tbody>
+</table>
+
