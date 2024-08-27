@@ -5,10 +5,7 @@ import com.knight.JobsFinder.Models.Question;
 import com.knight.JobsFinder.Services.JobFinderService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 import java.util.List;
@@ -17,17 +14,18 @@ import java.util.List;
 @RequestMapping("/api")
 @Slf4j
 @AllArgsConstructor
+@CrossOrigin(origins = "http://localhost:4200")
 public class JobFinderController {
 
     private final JobFinderService jobFinderService;
 
     @GetMapping("/findJobs")
     //ToDo: Put a filter on it to only get jobs-> posted in a certain date range.
-    public List<Job> findJobs() {
-        //
+    public List<Job> findJobs(String time) {
+
         log.info("Finding jobs according to leetcode posts.");
 
-        return jobFinderService.findCompaniesHiring();
+        return jobFinderService.findCompaniesHiring(time);
 
     }
 

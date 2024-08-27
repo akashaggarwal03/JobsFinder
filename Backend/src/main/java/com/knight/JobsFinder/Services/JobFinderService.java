@@ -3,7 +3,6 @@ package com.knight.JobsFinder.Services;
 import com.knight.JobsFinder.Models.InterviewExperienceResponse;
 import com.knight.JobsFinder.Models.Job;
 import com.knight.JobsFinder.Utils.Utils;
-import org.apache.http.HttpResponse;
 import Queries.GraphqlQueries;
 import com.knight.JobsFinder.Clients.LeetcodeGraphqlClient;
 import lombok.AllArgsConstructor;
@@ -12,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @AllArgsConstructor
@@ -24,15 +24,45 @@ public class JobFinderService {
      * This will find companies based on a serch criteria which will be date.
      */
     //Todo: Add Search criteria.
-    public List<Job> findCompaniesHiring(){
+    public List<Job> findCompaniesHiring(String time){
 
         log.info("Find companies which are hiring.");
 
         String graphqlQuery = GraphqlQueries.CATEGORY_TOPIC_LIST_QUERY;
         Map<String, Object> variables = prepareVariables(); // Replace with your method to prepare variables
 
+        // Get the current time in milliseconds
+        long currentTimeMillis = System.currentTimeMillis()/1000;
+
+        // Calculate the time for one week ago
+        long oneWeekAgoMillis = currentTimeMillis - TimeUnit.DAYS.toSeconds(7);
+
         try {
-            List<InterviewExperienceResponse> response = leetcodeGraphqlClient.executeGraphQLQuery(graphqlQuery, variables);
+
+
+            List<InterviewExperienceResponse> response = new ArrayList<>();
+
+            boolean foundAll = false;
+            Integer skip =15;
+            //ToDo: Add parallel calls.
+            while(!foundAll){
+
+                response.addAll(leetcodeGraphqlClient.executeGraphQLQuery(graphqlQuery, variables));
+
+                variables.put("skip",skip);
+                skip+=15;
+
+                InterviewExperienceResponse ie = response.get(response.size()-1);
+                Long curr = Long.parseLong(ie.getCreationDate());
+                log.info("Current milliseconds :" + curr);
+                if(curr < oneWeekAgoMillis)
+                    foundAll=true;
+                else if(skip>=150){
+                    log.error("Reached Limit " + ie.getCreationDate() + " vs " + oneWeekAgoMillis);
+                    break;
+                }
+            }
+
 
             List<Job> jobs = new ArrayList<>();
             Map<String,Integer> mp = new HashMap<>();
@@ -69,7 +99,7 @@ public class JobFinderService {
         Map<String, Object> variables = new HashMap<>();
         variables.put("categories", Arrays.asList("interview-experience"));
         variables.put("first", 15);
-        variables.put("orderBy", "hot");
+        variables.put("orderBy", "newest_to_oldest");
         return variables;
     }
 }

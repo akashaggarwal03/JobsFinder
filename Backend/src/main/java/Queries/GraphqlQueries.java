@@ -14,8 +14,13 @@ public class GraphqlQueries {
             "      node {\n" +
             "        id\n" +
             "        title\n" +
+            "        post {\n" +               // Access the post object
+            "          creationDate\n" +      // Include creationDate from post
+            "        }\n" +
             "      }\n" +
             "    }\n" +
             "  }\n" +
             "}";
+
+
 }

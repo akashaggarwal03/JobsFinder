@@ -19,6 +19,10 @@ public class Utils {
         companySet.add("box");
         companySet.add("innovaccer");
         companySet.add("amazon");
+        companySet.add("goldman sachs");
+        companySet.add("flipkart");
+        companySet.add("wayfair");
+        companySet.add("meta");
         // Add more as needed
     }
 
