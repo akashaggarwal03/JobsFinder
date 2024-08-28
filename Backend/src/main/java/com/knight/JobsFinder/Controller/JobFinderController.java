@@ -1,5 +1,6 @@
 package com.knight.JobsFinder.Controller;
 
+import com.knight.JobsFinder.Models.DateRangeEnum;
 import com.knight.JobsFinder.Models.Job;
 import com.knight.JobsFinder.Models.Question;
 import com.knight.JobsFinder.Services.JobFinderService;
@@ -19,14 +20,10 @@ public class JobFinderController {
 
     private final JobFinderService jobFinderService;
 
-    @GetMapping("/findJobs")
-    //ToDo: Put a filter on it to only get jobs-> posted in a certain date range.
-    public List<Job> findJobs(String time) {
-
+    @GetMapping("/findJobs/{time}")
+    public List<Job> findJobs(@PathVariable("time") DateRangeEnum time) {
         log.info("Finding jobs according to leetcode posts.");
-
         return jobFinderService.findCompaniesHiring(time);
-
     }
 
     @GetMapping("/questions/{companyName}")

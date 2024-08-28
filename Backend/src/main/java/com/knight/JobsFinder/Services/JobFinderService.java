@@ -1,5 +1,6 @@
 package com.knight.JobsFinder.Services;
 
+import com.knight.JobsFinder.Models.DateRangeEnum;
 import com.knight.JobsFinder.Models.InterviewExperienceResponse;
 import com.knight.JobsFinder.Models.Job;
 import com.knight.JobsFinder.Utils.Utils;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -24,7 +26,7 @@ public class JobFinderService {
      * This will find companies based on a serch criteria which will be date.
      */
     //Todo: Add Search criteria.
-    public List<Job> findCompaniesHiring(String time){
+    public List<Job> findCompaniesHiring(DateRangeEnum time){
 
         log.info("Find companies which are hiring.");
 
@@ -35,7 +37,7 @@ public class JobFinderService {
         long currentTimeMillis = System.currentTimeMillis()/1000;
 
         // Calculate the time for one week ago
-        long oneWeekAgoMillis = currentTimeMillis - TimeUnit.DAYS.toSeconds(7);
+        long oneWeekAgoMillis = currentTimeMillis - TimeUnit.DAYS.toSeconds(time.getLabel());
 
         try {
 
@@ -75,8 +77,17 @@ public class JobFinderService {
 
             }
 
+            Map<String, Integer> sortedMap = mp.entrySet()
+                    .stream()
+                    .sorted((entry1, entry2) -> entry2.getValue().compareTo(entry1.getValue())) // Descending order
+                    .collect(Collectors.toMap(
+                            Map.Entry::getKey,
+                            Map.Entry::getValue,
+                            (e1, e2) -> e1,
+                            LinkedHashMap::new));
 
-            for(var e: mp.entrySet()){
+
+            for(var e: sortedMap.entrySet()){
 
                 jobs.add(new Job(e.getKey(),e.getValue()));
 
