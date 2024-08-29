@@ -1,15 +1,29 @@
-<table>
-  <thead>
-    <tr>
-      <th>Company Name</th>
-      <th>Number of Posts</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let company of companyData">
-      <td>{{ company.companyName }}</td>
-      <td>{{ company.numberOfPosts }}</td>
-    </tr>
-  </tbody>
-</table>
+<div class="card">
+  <p-table [value]="companyData" [tableStyle]="{'min-width': '60rem'}">
+      <ng-template pTemplate="caption">
+          <div class="flex align-items-center justify-content-between">
+              Companies Currently Hiring
+          </div>
+      </ng-template>
+      <ng-template pTemplate="header">
+          <tr>
+              <th>Company Name</th>
+              <th>Hiring Rate</th> 
+              <th>Number of Posts</th>
+          </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-company>
+          <tr>
+              <td>{{company.companyName}}</td>
+              <!-- <td><p-rating [(ngModel)]="product.rating" [readonly]="true" [cancel]="false" /></td> -->
+              <td>{{company.numberOfPosts}}</td>
+          </tr>
+      </ng-template>
+      <ng-template pTemplate="summary">
+          <div class="flex align-items-center justify-content-between">
+              In total there are {{companyData ? companyData.length : 0 }} companies hiring.
+          </div>
+      </ng-template>
+  </p-table>
+</div>
 
