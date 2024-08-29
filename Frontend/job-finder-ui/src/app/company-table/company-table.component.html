@@ -1,14 +1,9 @@
 <div class="card">
   <p-table [value]="companyData" [tableStyle]="{'min-width': '60rem'}">
-      <ng-template pTemplate="caption">
-          <div class="flex align-items-center justify-content-between">
-              Companies Currently Hiring
-          </div>
-      </ng-template>
       <ng-template pTemplate="header">
           <tr>
               <th>Company Name</th>
-              <th>Hiring Rate</th> 
+              <th>Hiring Rate</th>
               <th>Number of Posts</th>
           </tr>
       </ng-template>
@@ -20,7 +15,7 @@
           </tr>
       </ng-template>
       <ng-template pTemplate="summary">
-          <div class="flex align-items-center justify-content-between">
+          <div *ngIf="companyData.length >0" class="flex align-items-center justify-content-between">
               In total there are {{companyData ? companyData.length : 0 }} companies hiring.
           </div>
       </ng-template>

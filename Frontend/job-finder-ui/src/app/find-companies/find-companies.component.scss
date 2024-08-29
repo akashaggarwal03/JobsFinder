@@ -1,10 +1,15 @@
-.search-filter-container{
-
+.container {
   display: flex;
-  justify-content:left /* Adjust as needed */
+  gap: 20px; /* This adds space between the components */
+}
 
+.search-filter-container{
+   display: flex;
+   justify-content: left;
+   padding-top: 10px;
+   padding-bottom: 10px;
 }
 
 .btn{
-  padding: 10px;
+  padding-left: 10px;
 }

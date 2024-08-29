@@ -1,19 +1,35 @@
-<div class="search-filter-container">
-  <app-overlay-loading [show]="isLoading"></app-overlay-loading>
-   <mat-form-field>
-    <mat-label>Date Range</mat-label>
-    <mat-select [formControl]="options">
-      <mat-option *ngFor="let option of optionList" [value]="option.value">
-        {{ option.label }}
-      </mat-option>
-    </mat-select>
-  </mat-form-field>
-<div class ="btn">
-  <button mat-raised-button  (click)="onSearch()">
-    Search
-  </button>
-</div>
-</div>
 <div>
-  <company-table [companyData]="companiesData" ></company-table>
+
+  <div class="container">
+    <p-card header="Find Companies Currently hiring!">
+      <p class="m-0">
+        Given a date range search for companies which are hiring. This denotes how many number of posts are madde by users
+        on leetcode regarding that compnay in that time range.
+    </p-card>
+
+  </div>
+
+  <div class="search-filter-container">
+    <app-overlay-loading [show]="isLoading"></app-overlay-loading>
+    <form [formGroup]="formGroup">
+      <p-dropdown
+        formControlName="selectedTimeRange"
+        [options]="timeRanges"
+        optionLabel="label"
+        placeholder="Select Date Range">
+      </p-dropdown>
+    </form>
+    <div class="btn">
+      <p-button label="Search" (click)="onSearch()"/>
+    </div>
+  </div>
+  <div>
+    <company-table [companyData]="companiesData"></company-table>
+
+  </div>
 </div>
+
+
+
+
+
