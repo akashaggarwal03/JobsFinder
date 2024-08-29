@@ -33,38 +33,13 @@ public class JobFinderService {
         String graphqlQuery = GraphqlQueries.CATEGORY_TOPIC_LIST_QUERY;
         Map<String, Object> variables = prepareVariables(); // Replace with your method to prepare variables
 
-        // Get the current time in milliseconds
-        long currentTimeMillis = System.currentTimeMillis()/1000;
-
-        // Calculate the time for one week ago
-        long oneWeekAgoMillis = currentTimeMillis - TimeUnit.DAYS.toSeconds(time.getLabel());
-
-        try {
 
 
             List<InterviewExperienceResponse> response = new ArrayList<>();
 
-            boolean foundAll = false;
-            Integer skip =15;
-            //ToDo: Add parallel calls.
-            while(!foundAll){
-
-                response.addAll(leetcodeGraphqlClient.executeGraphQLQuery(graphqlQuery, variables));
-
-                variables.put("skip",skip);
-                skip+=15;
-
-                InterviewExperienceResponse ie = response.get(response.size()-1);
-                Long curr = Long.parseLong(ie.getCreationDate());
-                log.info("Current milliseconds :" + curr);
-                if(curr < oneWeekAgoMillis)
-                    foundAll=true;
-                else if(skip>=150){
-                    log.error("Reached Limit " + ie.getCreationDate() + " vs " + oneWeekAgoMillis);
-                    break;
-                }
-            }
-
+            response.addAll(searchPosts(variables,time));
+            variables.put("categories", Arrays.asList("interview-experience"));
+            response.addAll(searchPosts(variables,time));
 
             List<Job> jobs = new ArrayList<>();
             Map<String,Integer> mp = new HashMap<>();
@@ -94,6 +69,42 @@ public class JobFinderService {
             }
 
             return jobs;
+    }
+
+
+    private List<InterviewExperienceResponse> searchPosts(Map<String,Object> variables, DateRangeEnum time){
+
+
+        String graphqlQuery = GraphqlQueries.CATEGORY_TOPIC_LIST_QUERY;
+        List<InterviewExperienceResponse> response = new ArrayList<>();
+
+        long currentTimeMillis = System.currentTimeMillis()/1000;
+
+        // Calculate the time for one week ago
+        long oneWeekAgoMillis = currentTimeMillis - TimeUnit.DAYS.toSeconds(time.getLabel());
+
+        boolean foundAll = false;
+        Integer skip =15;
+        //ToDo: Add parallel calls.
+
+        try {
+            while (!foundAll) {
+
+                response.addAll(leetcodeGraphqlClient.executeGraphQLQuery(graphqlQuery, variables));
+
+                variables.put("skip", skip);
+                skip += 15;
+
+                InterviewExperienceResponse ie = response.get(response.size() - 1);
+                Long curr = Long.parseLong(ie.getCreationDate());
+                log.info("Current milliseconds :" + curr);
+                if (curr < oneWeekAgoMillis)
+                    foundAll = true;
+                else if (skip >= 150) {
+                    log.error("Reached Limit " + ie.getCreationDate() + " vs " + oneWeekAgoMillis);
+                    break;
+                }
+            }
 
         } catch (IOException e) {
             // Handle exceptions
@@ -101,14 +112,14 @@ public class JobFinderService {
             e.printStackTrace();
         }
 
-        return Collections.EMPTY_LIST;
+        return  response;
 
     }
 
     // Example method to prepare variables
     private Map<String, Object> prepareVariables() {
         Map<String, Object> variables = new HashMap<>();
-        variables.put("categories", Arrays.asList("interview-experience"));
+        variables.put("categories", Arrays.asList("interview-question"));
         variables.put("first", 15);
         variables.put("orderBy", "newest_to_oldest");
         return variables;

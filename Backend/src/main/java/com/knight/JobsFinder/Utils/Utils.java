@@ -52,6 +52,9 @@ public class Utils {
         companySet.add("expedia");
         companySet.add("doordash");
         companySet.add("myntra");
+        companySet.add("de shaw");
+        companySet.add("lowe's");
+        companySet.add("airbnb");
 
         // Add more as needed
     }
