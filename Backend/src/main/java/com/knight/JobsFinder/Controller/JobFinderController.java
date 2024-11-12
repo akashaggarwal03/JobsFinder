@@ -3,6 +3,7 @@ package com.knight.JobsFinder.Controller;
 import com.knight.JobsFinder.Models.DateRangeEnum;
 import com.knight.JobsFinder.Models.Job;
 import com.knight.JobsFinder.Models.Question;
+import com.knight.JobsFinder.Models.QuestionType;
 import com.knight.JobsFinder.Services.JobFinderService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,9 +27,12 @@ public class JobFinderController {
         return jobFinderService.findCompaniesHiring(time);
     }
 
-    @GetMapping("/questions/{companyName}")
-    public List<Question> getQuestions(@PathVariable String companyName) {
+    @GetMapping("/questions/{companyName}/{time}/{questionType}")
+    public List<Question> getQuestions(@PathVariable("companyName") String companyName, @PathVariable("time") DateRangeEnum time,
+                                       @PathVariable("questionType")QuestionType questionType) {
         System.out.println("This will return the questions.");
-        return Collections.EMPTY_LIST;
+        List<Question> res = jobFinderService.findQuestions(companyName,time,questionType);
+        System.out.println("Found the result, result length:" + res.size());
+        return res;
     }
 }

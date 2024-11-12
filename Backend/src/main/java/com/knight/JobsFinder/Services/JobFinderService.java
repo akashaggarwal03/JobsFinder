@@ -1,8 +1,9 @@
 package com.knight.JobsFinder.Services;
 
-import com.knight.JobsFinder.Models.DateRangeEnum;
-import com.knight.JobsFinder.Models.InterviewExperienceResponse;
-import com.knight.JobsFinder.Models.Job;
+import com.google.cloud.firestore.QueryDocumentSnapshot;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.knight.JobsFinder.Models.*;
 import com.knight.JobsFinder.Utils.Utils;
 import Queries.GraphqlQueries;
 import com.knight.JobsFinder.Clients.LeetcodeGraphqlClient;
@@ -22,6 +23,19 @@ public class JobFinderService {
 
     private final LeetcodeGraphqlClient leetcodeGraphqlClient;
 
+    private final FireStoreService fireStoreService;
+
+
+    // Cache for company hiring data with expiration of 10 minutes
+    private final Cache<DateRangeEnum, List<Job>> companyHiringCache = CacheBuilder.newBuilder()
+            .maximumSize(1000)
+            .build();
+
+    // Cache for questions data with expiration of 10 minutes
+    private final Cache<String, List<Question>> questionsCache = CacheBuilder.newBuilder()
+            .maximumSize(1000)
+            .build();
+
     /**
      * This will find companies based on a serch criteria which will be date.
      */
@@ -29,6 +43,13 @@ public class JobFinderService {
     public List<Job> findCompaniesHiring(DateRangeEnum time){
 
         log.info("Find companies which are hiring.");
+
+        // Check cache first
+        List<Job> cachedJobs = companyHiringCache.getIfPresent(time);
+        if (cachedJobs != null) {
+            log.info("Returning cached hiring data.");
+            return cachedJobs;
+        }
 
         String graphqlQuery = GraphqlQueries.CATEGORY_TOPIC_LIST_QUERY;
         Map<String, Object> variables = prepareVariables(); // Replace with your method to prepare variables
@@ -68,7 +89,9 @@ public class JobFinderService {
 
             }
 
-            return jobs;
+        // Store in cache
+        companyHiringCache.put(time, jobs);
+        return jobs;
     }
 
 
@@ -78,10 +101,7 @@ public class JobFinderService {
         String graphqlQuery = GraphqlQueries.CATEGORY_TOPIC_LIST_QUERY;
         List<InterviewExperienceResponse> response = new ArrayList<>();
 
-        long currentTimeMillis = System.currentTimeMillis()/1000;
-
-        // Calculate the time for one week ago
-        long oneWeekAgoMillis = currentTimeMillis - TimeUnit.DAYS.toSeconds(time.getLabel());
+        long timeStamp = getTimeStampBeforeGivenPeriod(time);
 
         boolean foundAll = false;
         Integer skip =15;
@@ -98,10 +118,10 @@ public class JobFinderService {
                 InterviewExperienceResponse ie = response.get(response.size() - 1);
                 Long curr = Long.parseLong(ie.getCreationDate());
                 log.info("Current milliseconds :" + curr);
-                if (curr < oneWeekAgoMillis)
+                if (curr < timeStamp )
                     foundAll = true;
                 else if (skip >= 150) {
-                    log.error("Reached Limit " + ie.getCreationDate() + " vs " + oneWeekAgoMillis);
+                    log.error("Reached Limit " + ie.getCreationDate() + " vs " + timeStamp );
                     break;
                 }
             }
@@ -123,5 +143,68 @@ public class JobFinderService {
         variables.put("first", 15);
         variables.put("orderBy", "newest_to_oldest");
         return variables;
+    }
+
+
+    public List<Question> findQuestions(String companyName, DateRangeEnum dateRangeEnum, QuestionType questionType){
+
+        log.info("Finding questions company wise:{} and dateRange:{}",companyName,dateRangeEnum.getLabel());
+        String cacheKey = companyName + "-" + dateRangeEnum + "-" + questionType;
+
+        // Check cache first
+        List<Question> cachedQuestions = questionsCache.getIfPresent(cacheKey);
+        if (cachedQuestions != null) {
+            log.info("Returning cached questions data.");
+            return cachedQuestions;
+        }
+
+        List<Question> questions = new ArrayList<>();
+
+        long timeStamp = getTimeStampBeforeGivenPeriod(dateRangeEnum);
+
+        try{
+            List<QueryDocumentSnapshot> data = fireStoreService.getCompanyDocumentsAfterTimestamp(companyName,timeStamp);
+
+            for(QueryDocumentSnapshot document: data){
+
+                Question ques = new Question();
+                List<Map<String, Object>> questionData = (List<Map<String, Object>>) document.get("questions");
+
+                if (questionData != null) {
+                    for (Map<String, Object> questionMap : questionData) {
+
+                        String type = questionMap.get("questionType").toString();
+                        String text = (String) questionMap.get("questionText");
+                        if(type.equals(questionType.getLabel()) && !text.equals("NULL")){
+                            Question question = new Question();
+                            question.setQuestionText(text);
+                            questions.add(question);
+                        }
+
+                    }
+                }
+
+            }
+
+        }catch (Exception ex){
+            log.error(ex.getMessage());
+        }
+
+        // Store in cache
+        questionsCache.put(cacheKey, questions);
+
+        return questions;
+    }
+
+
+
+    private Long getTimeStampBeforeGivenPeriod(DateRangeEnum dateRangeEnum){
+
+        long currentTimeMillis = System.currentTimeMillis()/1000;
+
+        // Calculate the time for one week ago
+        long timeStamp  = currentTimeMillis - TimeUnit.DAYS.toSeconds(dateRangeEnum.getLabel());
+
+        return timeStamp;
     }
 }
