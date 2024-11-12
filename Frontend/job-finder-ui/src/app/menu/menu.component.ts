@@ -32,7 +32,8 @@ export class MenuComponent implements OnInit {
                     },
                     {
                         label: 'Compnay Wise Questions',
-                        icon: 'pi pi-server'
+                        icon: 'pi pi-server',
+                        routerLink: ['/app-company-wise-questions']
                     },
                     {
                         label: 'System Design',

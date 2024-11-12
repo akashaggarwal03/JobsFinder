@@ -1,0 +1,70 @@
+<div>
+
+  <div class="container">
+    <p-card header="Find Company wise Questions!">
+      <p class="m-0">
+        Type in the name of the company, type of question and date range.
+    </p-card>
+
+  </div>
+
+  <div class="search-filter-container">
+    <app-overlay-loading [show]="isLoading"></app-overlay-loading>
+    <form [formGroup]="formGroup">
+      <p-dropdown
+        formControlName="selectedTimeRange"
+        [options]="timeRanges"
+        optionLabel="label"
+        placeholder="Select Date Range">
+      </p-dropdown>
+    </form>
+    <form [formGroup]="formGroup">
+      <p-dropdown
+        formControlName="selectedTypeOfQuestion"
+        [options]="typeofQuestion"
+        optionLabel="label"
+        placeholder="Select Type of Question">
+      </p-dropdown>
+    </form>
+
+    <form [formGroup]="formGroup">
+      <p-dropdown
+        formControlName="selectedCompanyName"
+        [options]="companies"
+        placeholder="Select Company">
+      </p-dropdown>
+    </form>
+    <div class="btn">
+      <p-button label="Search" (click)="onSearch()"/>
+    </div>
+  </div>
+
+
+  <p-table
+  [value]="questions"
+  [paginator]="true"
+  [rows]="rowsPerPage"
+  [totalRecords]="totalRecords"
+  [rowsPerPageOptions]="[5, 10, 20]" >
+
+  <ng-template pTemplate="header">
+    <tr>
+      <th>Question</th>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="body" let-question>
+    <tr>
+      <td>{{ question.questionText}}</td>
+    </tr>
+  </ng-template>
+</p-table>
+
+
+</div>
+
+
+
+
+
+

@@ -14,4 +14,9 @@ export class JobFinderService {
     const url = `http://localhost:8080/api/findJobs/${range}`;
     return this.http.get(url);
   }
+
+  getQuestions(companyName: String,range:String, questionType: String): Observable<any> {
+    const url = `http://localhost:8080/api/questions/${companyName}/${range}/${questionType}`;
+    return this.http.get(url);
+  }
 }
