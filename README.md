@@ -12,7 +12,7 @@ Start Contributing:
 5. Start Contributing.
 
 
-To Contributein the scheduler:
+To Contribute in the scheduler:
 TBD.
 
 Website: TBD
