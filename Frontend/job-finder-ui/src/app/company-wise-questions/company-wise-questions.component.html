@@ -10,14 +10,14 @@
 
   <div class="search-filter-container">
     <app-overlay-loading [show]="isLoading"></app-overlay-loading>
-    <form [formGroup]="formGroup">
+    <!-- <form [formGroup]="formGroup">
       <p-dropdown
         formControlName="selectedTimeRange"
         [options]="timeRanges"
         optionLabel="label"
         placeholder="Select Date Range">
       </p-dropdown>
-    </form>
+    </form> -->
     <form [formGroup]="formGroup">
       <p-dropdown
         formControlName="selectedTypeOfQuestion"
