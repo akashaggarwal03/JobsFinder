@@ -29,9 +29,11 @@ public class JobFinderController {
 
     @GetMapping("/questions/{companyName}/{time}/{questionType}")
     public List<Question> getQuestions(@PathVariable("companyName") String companyName, @PathVariable("time") DateRangeEnum time,
-                                       @PathVariable("questionType")QuestionType questionType) {
+                                       @PathVariable("questionType")String questionType) {
         System.out.println("This will return the questions.");
-        List<Question> res = jobFinderService.findQuestions(companyName,time,questionType);
+        log.info("Company Name:{}, Question Type:{}",companyName,questionType);
+        QuestionType qt = QuestionType.valueOf(questionType.toUpperCase());
+        List<Question> res = jobFinderService.findQuestions(companyName,time,qt);
         System.out.println("Found the result, result length:" + res.size());
         return res;
     }
