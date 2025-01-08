@@ -104,7 +104,7 @@ public class JobFinderService {
         long timeStamp = getTimeStampBeforeGivenPeriod(time);
 
         boolean foundAll = false;
-        Integer skip =15;
+        Integer skip =0;
         //ToDo: Add parallel calls.
 
         try {
@@ -120,10 +120,10 @@ public class JobFinderService {
                 log.info("Current milliseconds :" + curr);
                 if (curr < timeStamp )
                     foundAll = true;
-                else if (skip >= 150) {
-                    log.error("Reached Limit " + ie.getCreationDate() + " vs " + timeStamp );
-                    break;
-                }
+//                else if (skip >= 200) { // This added in order to avoid
+//                    log.error("Reached Limit " + ie.getCreationDate() + " vs " + timeStamp );
+//                    break;
+//                }
             }
 
         } catch (IOException e) {
