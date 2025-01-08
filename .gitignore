@@ -38,3 +38,4 @@ out/
 
 ### Service Account File ###
 service-account-file.json
+.vercel
