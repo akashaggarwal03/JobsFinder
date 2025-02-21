@@ -30,7 +30,7 @@ import java.util.concurrent.ExecutionException;
 @Service
 public class FireStoreService {
 
-    private final Firestore firestore;
+   // private final Firestore firestore;
 
     public FireStoreService() throws IOException {
         GoogleCredentials credentials;
