@@ -8,8 +8,8 @@ import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.google.cloud.firestore.QuerySnapshot;
 import org.springframework.stereotype.Service;
 
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
+import java.util.Base64;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -23,7 +23,6 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -33,17 +32,43 @@ public class FireStoreService {
     private final Firestore firestore;
 
     public FireStoreService() throws IOException {
-        // Load the service account file from resources
-        ClassPathResource resource = new ClassPathResource("service-account-file.json");
-        try (InputStream serviceAccountStream = resource.getInputStream()) {
-            GoogleCredentials credentials = GoogleCredentials.fromStream(serviceAccountStream);
-            FirestoreOptions firestoreOptions = FirestoreOptions.newBuilder()
-                    .setCredentials(credentials)
-                    .setProjectId("techarticles-407117")
-                    .build();
-            this.firestore = firestoreOptions.getService();
+        GoogleCredentials credentials;
+
+        // Check if GOOGLE_APPLICATION_CREDENTIALS_BASE64 is set (Railway)
+        String base64Creds = System.getenv("GOOGLE_APPLICATION_CREDENTIALS_BASE64");
+
+        if (base64Creds != null && !base64Creds.isEmpty()) {
+            // Decode Base64 JSON
+            byte[] decodedBytes = Base64.getDecoder().decode(base64Creds);
+
+            // Write to a temporary file
+            File tempFile = File.createTempFile("service-account", ".json");
+            tempFile.deleteOnExit(); // Auto-delete when the app stops
+
+            try (FileOutputStream fos = new FileOutputStream(tempFile)) {
+                fos.write(decodedBytes);
+            }
+
+            // Load credentials from the temporary file
+            try (FileInputStream serviceAccountStream = new FileInputStream(tempFile)) {
+                credentials = GoogleCredentials.fromStream(serviceAccountStream);
+            }
+        } else {
+            // Fallback: Load from resources (Local Development)
+            ClassPathResource resource = new ClassPathResource("service-account-file.json");
+            try (InputStream serviceAccountStream = resource.getInputStream()) {
+                credentials = GoogleCredentials.fromStream(serviceAccountStream);
+            }
         }
+
+        // Initialize Firestore
+        FirestoreOptions firestoreOptions = FirestoreOptions.newBuilder()
+                .setCredentials(credentials)
+                .setProjectId("techarticles-407117")
+                .build();
+        this.firestore = firestoreOptions.getService();
     }
+
 
     public List<QueryDocumentSnapshot> getCompanyDocumentsAfterTimestamp(String companyName, long timestamp)
             throws ExecutionException, InterruptedException {
