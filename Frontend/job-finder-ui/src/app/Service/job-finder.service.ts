@@ -11,7 +11,7 @@ export class JobFinderService {
 
   getJobs(range: String): Observable<any> {
     console.log("Got input for range:" + range);
-    const url = `http://localhost:8080/api/findJobs/${range}`;
+    const url = `https://sincere-contentment-production.up.railway.app/api/findJobs/${range}`;
     return this.http.get(url);
   }
 
