@@ -16,7 +16,7 @@ import java.util.List;
 @RequestMapping("/api")
 @Slf4j
 @AllArgsConstructor
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "*")
 public class JobFinderController {
 
     private final JobFinderService jobFinderService;
