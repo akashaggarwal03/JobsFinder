@@ -15,3 +15,4 @@ Start Contributing:
 Website: https://jobs-finder-app.vercel.app/menu
 
 
+<img width="1439" alt="Screenshot 2025-02-22 at 6 12 36 PM" src="https://github.com/user-attachments/assets/1eeeb8e1-4365-4423-b85f-3a095ca8b377" />
