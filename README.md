@@ -15,6 +15,6 @@ Start Contributing:
 To Contribute in the scheduler:
 TBD.
 
-Website: TBD
+Website: https://jobs-finder-app.vercel.app/menu
 
 
