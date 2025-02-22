@@ -16,7 +16,7 @@ export class JobFinderService {
   }
 
   getQuestions(companyName: String,range:String, questionType: String): Observable<any> {
-    const url = `http://localhost:8080/api/questions/${companyName}/${range}/${questionType}`;
+    const url = `https://sincere-contentment-production.up.railway.app/api/questions/${companyName}/${range}/${questionType}`;
     return this.http.get(url);
   }
 }

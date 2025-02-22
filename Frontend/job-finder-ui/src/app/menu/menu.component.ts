@@ -31,9 +31,9 @@ export class MenuComponent implements OnInit {
                         routerLink: ['/find-companies']
                     },
                     {
-                        label: 'Compnay Wise Questions',
+                        label: 'Company Wise Questions',
                         icon: 'pi pi-server',
-                        // routerLink: ['/app-company-wise-questions']
+                        routerLink: ['/app-company-wise-questions']
                     },
                     {
                         label: 'System Design',
@@ -44,11 +44,11 @@ export class MenuComponent implements OnInit {
                     }
                 ]
             },
-            {
-                label: 'Contact',
-                icon: 'pi pi-envelope',
-                routerLink: '/contact'
-            }
+            // {
+            //     label: 'Contact',
+            //     icon: 'pi pi-envelope',
+            //     routerLink: '/contact'
+            // }
         ];
 
       }

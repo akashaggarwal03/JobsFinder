@@ -20,4 +20,10 @@ export class CompanyTableComponent
   ngOnInit() {
     this.dataSource.data = this.companyData;
   }
+
+  capitalizeFirstWord(name: string): string {
+    if (!name) return '';
+    return name.replace(/\b\w/, (char) => char.toUpperCase());
+  }
+
 }
